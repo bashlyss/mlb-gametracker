@@ -74,6 +74,14 @@ function checkGameState() {
                 }
             });
         }
+
+        if(diff.indexOf('outs') != -1 && newGameState.outs - gameState.outs == 2) {
+            _.filter(gameStateListeners, {'event': 'doubleplay'}).forEach(function(listener) {
+                if(!listener.condition || listener.condition(newGameState.outs, gameState.outs)) {
+                    listener.callback();
+                }
+            });
+        }
         console.log(diff);
     }
     gameState = newGameState;
@@ -112,6 +120,8 @@ function checkGameEvents() {
                 if(newGameEvent.description.indexOf('singles') > 0) {
                     triggerGameEvent('single', newGameEvent);
                 }
+
+                triggerGameEvent('play', newGameEvent);
             }
         }
     });
@@ -127,19 +137,33 @@ function startScraper() {
 
 startScraper();
 
-chrome.storage.local.get('strike', function(val) {
-    if(val.strike) {
-        bindGameListener('strike', function(){alert('STRIKKKEEE!');});
-        console.log('on');
-    }
+
+var callbacks = {
+    strike: function(){alert('STRIKKKEEE!');},
+    doubleplay: function(){alert('DOUBLE PLAY');},
+    single: function(){console.log('SINGLE!SINGLE!');},
+    play: function(){console.log('There was a play!');}
+}
+
+var DEBUG_BIND_ALL_EVENTS = false;
+
+_.forEach(callbacks, function(callback, gameEvent) {
+    chrome.storage.local.get(gameEvent, function(val) {
+        if(val[gameEvent] || DEBUG_BIND_ALL_EVENTS) {
+            bindGameListener(gameEvent, callback);
+            console.log('on');
+        }
+    });
 });
 
 chrome.storage.onChanged.addListener(function(changes, namespace) {
     for (key in changes) {
         var storageChange = changes[key];
-        if(key == 'strike') {
+        var callback = callbacks[key];
+        if(callback) {
             if(storageChange.newValue) {
-                // add listener
+                bindGameListener(key, callback);
+                console.log('on');
             } else {
                 // remove listener
             }
@@ -147,5 +171,3 @@ chrome.storage.onChanged.addListener(function(changes, namespace) {
     }
 });
 
-bindGameListener('single', function(){console.log('SINGLE!SINGLE!');});
-bindGameListener('play', function(){console.log('There was a play!');});
