@@ -162,7 +162,7 @@ var callbacks = {
     score: function(){sendNotification('Scored!')},
 }
 
-var DEBUG_BIND_ALL_EVENTS = true;
+var DEBUG_BIND_ALL_EVENTS = false;
 
 _.forEach(callbacks, function(callback, gameEvent) {
     chrome.storage.local.get(gameEvent, function(val) {
@@ -182,7 +182,7 @@ chrome.storage.onChanged.addListener(function(changes, namespace) {
                 bindGameListener(key, callback);
                 console.log('on');
             } else {
-                // remove listener
+                removeGameListener(key);
             }
         }
     }
