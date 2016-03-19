@@ -9,29 +9,28 @@
     <title>Getting Started Extension's Popup</title>
     <style>
       body {
-        font-family: "Segoe UI", "Lucida Grande", Tahoma, sans-serif;
-        font-size: 100%;
+        min-width: 400px;
       }
-      #status {
-        /* avoid an excessively wide status text */
-        white-space: pre;
-        text-overflow: ellipsis;
-        overflow: hidden;
-        max-width: 400px;
+      .form {
+        min-height: 400px;
       }
     </style>
-
-    <!--
-      - JavaScript and HTML must be in separate files: see our Content Security
-      - Policy documentation[1] for details and explanation.
-      -
-      - [1]: https://developer.chrome.com/extensions/contentSecurityPolicy
-     -->
+    <script src="jquery-2.2.2.min.js"></script>
     <script src="popup.js"></script>
   </head>
   <body>
-    <div id="status"></div>
-    <img id="image-result" hidden>
+    <form id="user-form">
+      <div>My Team</div>
+      <select name="team">
+        <option name="team" value="SFG">San Francisco Giants</option>
+        <option name="team" value="OAK">Oakland Athletics</option>
+      </select>
+      <div>Alert me when there is a:</div>
+      <input type="checkbox" name="event" value="ball">Ball<br>
+      <input type="checkbox" name="event" value="strike">Strike<br>
+      <input type="checkbox" name="event" value="risp">Runners In Scoring Position<br>
+      <input type="checkbox" name="event" value="score">Scoring Change<br>
+      <input type="submit" value="Submit">
+    </form>
   </body>
 </html>
-

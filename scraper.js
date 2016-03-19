@@ -51,7 +51,6 @@ function getGameState() {
         strikes: getCount('strikes'),
         outs: getCount('outs'),
     }
-
 }
 
 function getGameStateDiff(a, b) {
@@ -62,17 +61,69 @@ function getGameStateDiff(a, b) {
 }
 
 var gameState = null;
+var gameStateListeners = [];
+
+function checkGameState() {
+    var newGameState = getGameState();
+    var diff = getGameStateDiff(newGameState, gameState);
+    if(diff.length) {
+        if(diff.indexOf('strikes') != -1) {  // not sure why other lodash functions aren't working
+            _.filter(gameStateListeners, {'event': 'strike'}).forEach(function(listener) {
+                if(!listener.condition || listener.condition(newGameState.strikes, gameState.strike)) {
+                    listener.callback();
+                }
+            });
+        }
+        console.log(diff);
+    }
+    gameState = newGameState;
+}
+
+function bindGameListener(eventName, call, condition) {
+    gameStateListeners.push({'event': eventName, callback: call, condition: condition});
+}
+
+var gameEvents = [];
+jQuery.fn.reverse = [].reverse;
+
+function triggerGameEvent(eventName, newGameEvent) {
+    _.filter(gameStateListeners, {'event': eventName}).forEach(function(listener) {
+        if(!listener.condition || listener.condition(newGameEvent.description)) {
+            listener.callback();
+        }
+    });
+}
+function checkGameEvents() {
+    $('#events > *').reverse().each(function(){
+        var $gameEvent = $(this);
+        if($gameEvent.hasClass('play')) {
+            var abNum = $gameEvent.find(' > .detail').data('ab-num');
+            if(! _.find(gameEvents, {'ab-num': abNum})) {
+                var newGameEvent = {
+                    'ab-num': abNum,
+                    'description': $gameEvent.find('.description').text()
+                }
+                console.log(newGameEvent);
+                gameEvents.push(newGameEvent);
+
+                if(newGameEvent.description.indexOf('singles') > 0) {
+                    triggerGameEvent('single', newGameEvent);
+                }
+            }
+        }
+    });
+}
 
 function startScraper() {
     gameState = getGameState();
     window.setInterval(function(){
-        var newGameState = getGameState();
-        var diff = getGameStateDiff(newGameState, gameState);
-        if(diff.length) {
-            console.log(diff);
-        }
-        gameState = newGameState;
+        checkGameState();
+        checkGameEvents();
     }, 1000);
 }
 
 startScraper();
+
+bindGameListener('strike', function(){console.log('STRIKKKEEE!');});
+bindGameListener('single', function(){console.log('SINGLE!SINGLE!');});
+bindGameListener('play', function(){console.log('There was a play!');});

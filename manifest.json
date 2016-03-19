@@ -6,7 +6,8 @@
     "version": "1.0",
 
     "browser_action": {
-        "default_icon": "icon.png"
+        "default_icon": "icon.png",
+        "default_popup": "popup.html"
     },
     "background": {
         "scripts": ["background.js"]
@@ -21,8 +22,9 @@
             "jquery-2.2.2.min.js",
             "lodash.core.min.js",
             "content.js",
-            "scraper.js"
-            ]
+            "scraper.js",
+            "popup.js"
+        ]
     }
     ],
     "permissions": [
