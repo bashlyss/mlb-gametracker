@@ -51,7 +51,6 @@ function getGameState() {
         strikes: getCount('strikes'),
         outs: getCount('outs'),
     }
-
 }
 
 function getGameStateDiff(a, b) {
@@ -62,17 +61,44 @@ function getGameStateDiff(a, b) {
 }
 
 var gameState = null;
+var gameStateListeners = [];
+
+function checkGameState() {
+    var newGameState = getGameState();
+    var diff = getGameStateDiff(newGameState, gameState);
+    if(diff.length) {
+        if(_.find(diff, 'strikes')) {
+            _.filter(gameStateListeners, {'event': 'strike'}).forEach(function(listener) {
+                if(listener.condition && listener.condition(newGameState.strikes, gameState.strike)) {
+                    listener.callback();
+                }
+            });
+        }
+        console.log(diff);
+    }
+    gameState = newGameState;
+}
+
+function bindGameListener(eventName, call, condition) {
+    gameStateListeners.push({'event': eventName, callback: call, condition: condition});
+}
+
+var events = [];
+jQuery.fn.reverse = [].reverse;
+function checkEvents() {
+    $('#events > *').reverse().each(function(){
+
+    });
+}
 
 function startScraper() {
     gameState = getGameState();
     window.setInterval(function(){
-        var newGameState = getGameState();
-        var diff = getGameStateDiff(newGameState, gameState);
-        if(diff.length) {
-            console.log(diff);
-        }
-        gameState = newGameState;
+        checkGameState();
+        checkEvents();
     }, 1000);
 }
 
 startScraper();
+
+bindGameListener('strike', function(){console.log('STRIKKKEEE!')});
