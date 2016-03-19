@@ -3,4 +3,3 @@ var postNotification = function() {
   // body.append('<div id="created_div">hello this is a notification</div>');
 };
 
-postNotification();

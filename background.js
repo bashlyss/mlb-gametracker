@@ -5,7 +5,9 @@ function sendNotification() {
     chrome.tabs.query(queryInfo, function (tabs) {
         var tab = tabs[1];
         chrome.tabs.executeScript(null, { file: "jquery-2.2.2.min.js" }, function() {
-            chrome.tabs.executeScript(null, { file: "notification.js" });
+            chrome.tabs.executeScript(null, { file: "notification.js" }, function() {
+                chrome.tabs.executeScript(null, { code: 'postNotification();'});
+            });
         });
     });
 }
@@ -51,6 +53,15 @@ function checkGameState(game) {
                 }
             });
         }
+
+        if(diff.indexOf('outs') != -1 && newGameState.outs - gameState.outs == 2) {
+            _.filter(gameStateListeners, {'event': 'doubleplay'}).forEach(function(listener) {
+                if(!listener.condition || listener.condition(newGameState.outs, gameState.outs)) {
+                    listener.callback();
+                }
+            });
+        }
+
         console.log(diff);
     }
     gameState = newGameState;
@@ -71,12 +82,6 @@ function triggerGameEvent(eventName, newGameEvent) {
         }
     });
 }
-
-bindGameListener('strike', function(){console.log('STRIKKKEEE!');});
-bindGameListener('single', function(){console.log('SINGLE!SINGLE!');});
-bindGameListener('play', function(){console.log('There was a play!');});
-
-
 
 window.setInterval(function () {
     var date = new Date();
@@ -117,10 +122,12 @@ window.setInterval(function () {
 }, 1000);
 
 var callbacks = {
-    strike: function(){alert('STRIKKKEEE!');},
-    doubleplay: function(){alert('DOUBLE PLAY');},
-    single: function(){console.log('SINGLE!SINGLE!');},
-    play: function(){console.log('There was a play!');}
+    strike: sendNotification,
+    doubleplay: sendNotification,
+    single: sendNotification,
+    play: sendNotification,
+    risp: sendNotification,
+    score: sendNotification,
 }
 
 var DEBUG_BIND_ALL_EVENTS = false;
