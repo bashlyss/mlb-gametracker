@@ -14,7 +14,11 @@
         "matches":[
             "http://mlb.mlb.com/mlb/gameday/index.jsp*"
             ],
-        "js": ["jquery-2.2.2.min.js", "content.js"]
+        "js": [
+            "jquery-2.2.2.min.js",
+            "content.js",
+            "scraper.js"
+            ]
     }
     ]
 }
