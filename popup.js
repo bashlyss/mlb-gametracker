@@ -4,6 +4,7 @@ function submitForm(e) {
     var $form = $(e.target);
 
     var newData = {};
+    newData['enabled'] = $('#enabled').prop('checked');
     newData['team'] = $form.find(':input[name="team"]').val();
     newData['announcer'] = $form.find('#announcer').val();
     $form.find('input[name="event"]').each(function(){
@@ -15,7 +16,8 @@ function submitForm(e) {
     $("#message").text('Your preferences have been saved');
     setTimeout(function () {
         $("#message").text('');
-    }, 2000);
+        window.close();
+    }, 1000);
 };
 
 // When the popup HTML has loaded
@@ -25,6 +27,7 @@ window.addEventListener('load', function(e) {
         $('form').on('submit', submitForm);
     }
 
+    chrome.storage.local.get('enabled', function(val){$('#enabled').prop('checked', val.enabled);});
     chrome.storage.local.get('team', function(val){$(':input[name="team"]').val(val.team);});
     chrome.storage.local.get('announcer', function(val){$('#announcer').val(val.announcer);});
     ['ball', 'strike', 'risp', 'score', 'doubleplay'].forEach(function(field) {

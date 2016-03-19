@@ -108,12 +108,14 @@ function triggerGameEvent(eventName, newGameEvent) {
 // Setting so that we have data during the demo even though no games are active :(
 var SIMULATE = true;
 var state = 0;
-var timeout = 4000;
+var timeout = 1000;
 if (SIMULATE) {
-	timeout *= 1;
+	timeout *= 15;
 }
 
 window.setInterval(function () {
+    chrome.storage.local.get('enabled', function(val) {
+        if(val.enabled) {
     var date = new Date();
     var year = String(date.getFullYear());
     var month = String(date.getMonth() + 1);
@@ -154,13 +156,14 @@ window.setInterval(function () {
 	} else {
 		xhttp.open("GET", "state_" + String(state) + ".json");
 		state += 1;
-		if (state === 4) {
+		if (state === 5) {
 			state = 0;
 		}
 	}
     xhttp.send();
     // sendNotification('My text');
 
+        }});
 }, timeout);
 
 var strings = {
