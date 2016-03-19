@@ -1,8 +1,8 @@
 {
     "manifest_version": 2,
 
-    "name": "Baseball Hackday 2016",
-    "description": "A cool chrome extension to visualize data in mlb gameday",
+    "name": "Third Base Coach",
+    "description": "A chrome extension to stay up to date with your favorite MLB team",
     "version": "1.0",
 
     "browser_action": {
