@@ -49,7 +49,7 @@ var gameStateListeners = [];
 
 function checkGameState(game) {
     var newGameState = getGameState(game);
-    var url = 'mlb.mlb.com/mlb/gameday/index.jsp?gid=' + newGameState.id;
+    var url = 'http://mlb.mlb.com/mlb/gameday/index.jsp?gid=' + newGameState.id;
     var diff = getGameStateDiff(newGameState, gameState);
     if(diff.length) {
         if(diff.indexOf('strikes') != -1) {  // not sure why other lodash functions aren't working
