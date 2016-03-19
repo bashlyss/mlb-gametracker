@@ -74,6 +74,14 @@ function checkGameState(game) {
             });
         }
 
+        if(diff.indexOf('runners') != -1 && (newState.runners.second || newState.runners.third)) {
+            _.filter(gameStateListeners, {'event': 'risp'}).forEach(function(listener) {
+                if(!listener.condition || listener.condition(newGameState.score, gameState.score)) {
+                    listener.callback();
+                }
+            });
+        }
+
         console.log(diff);
     }
     gameState = newGameState;
@@ -96,7 +104,7 @@ function triggerGameEvent(eventName, newGameEvent) {
 }
 
 // Setting so that we have data during the demo even though no games are active :(
-var SIMULATE = true;
+var SIMULATE = false;
 var state = 0;
 var timeout = 1000;
 if (SIMULATE) {
@@ -162,7 +170,7 @@ var callbacks = {
     score: function(){sendNotification('Scored!')},
 }
 
-var DEBUG_BIND_ALL_EVENTS = true;
+var DEBUG_BIND_ALL_EVENTS = false;
 
 _.forEach(callbacks, function(callback, gameEvent) {
     chrome.storage.local.get(gameEvent, function(val) {
@@ -182,7 +190,7 @@ chrome.storage.onChanged.addListener(function(changes, namespace) {
                 bindGameListener(key, callback);
                 console.log('on');
             } else {
-                // remove listener
+                removeGameListener(key);
             }
         }
     }
