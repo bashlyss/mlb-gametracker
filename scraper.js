@@ -67,13 +67,9 @@ function checkGameState() {
     var newGameState = getGameState();
     var diff = getGameStateDiff(newGameState, gameState);
     if(diff.length) {
-        console.log(diff);
         if(diff.indexOf('strikes') != -1) {  // not sure why other lodash functions aren't working
-            console.log('strikes diff');
             _.filter(gameStateListeners, {'event': 'strike'}).forEach(function(listener) {
-                console.log(listener);
                 if(!listener.condition || listener.condition(newGameState.strikes, gameState.strike)) {
-                    console.log(listener);
                     listener.callback();
                 }
             });
@@ -92,9 +88,7 @@ jQuery.fn.reverse = [].reverse;
 
 function triggerGameEvent(eventName, newGameEvent) {
     _.filter(gameStateListeners, {'event': eventName}).forEach(function(listener) {
-        console.log(listener);
         if(!listener.condition || listener.condition(newGameEvent.description)) {
-            console.log(listener);
             listener.callback();
         }
     });
@@ -112,7 +106,7 @@ function checkGameEvents() {
                 console.log(newGameEvent);
                 gameEvents.push(newGameEvent);
 
-                if(newGameEvent.description.indexOf('singles')) {
+                if(newGameEvent.description.indexOf('singles') > 0) {
                     triggerGameEvent('single', newGameEvent);
                 }
             }
