@@ -139,14 +139,6 @@ window.setInterval(function () {
             var queryInfo = {
                 active: true,
             }
-
-            chrome.tabs.query(queryInfo, function (tabs) {
-                var tab = tabs[0];
-                chrome.tabs.executeScript( tab.id, {
-                    code: 'console.log("hello")'
-                });
-            });
-
         }
     };
 
