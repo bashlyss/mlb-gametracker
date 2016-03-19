@@ -11,6 +11,10 @@ function submitForm(e) {
     });
     console.log(newData);
     chrome.storage.local.set(newData);
+    $("#message").text('Your preferences have been saved');
+    setTimeout(function () {
+        $("#message").text('');
+    }, 2000);
 };
 
 // When the popup HTML has loaded
