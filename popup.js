@@ -21,7 +21,7 @@ window.addEventListener('load', function(e) {
     }
 
     chrome.storage.local.get('team', function(val){$(':input[name="team"]').val(val.team);});
-    ['ball', 'strike', 'risp', 'score'].forEach(function(field) {
+    ['ball', 'strike', 'risp', 'score', 'doubleplay'].forEach(function(field) {
         chrome.storage.local.get(field, function(val){
             console.log(':input[myval="' + field + '"]');
             console.log(val[field]);

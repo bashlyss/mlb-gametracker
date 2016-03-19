@@ -1,3 +1,17 @@
+function sendNotification() {
+    var queryInfo = {
+        active: true
+    }
+    chrome.tabs.query(queryInfo, function (tabs) {
+        var tab = tabs[1];
+        chrome.tabs.executeScript(null, { file: "jquery-2.2.2.min.js" }, function() {
+            chrome.tabs.executeScript(null, { file: "notification.js" }, function() {
+                chrome.tabs.executeScript(null, { code: 'postNotification();'});
+            });
+        });
+    });
+}
+
 function getGameState(game) {
     return {
         teams: {
@@ -8,7 +22,7 @@ function getGameState(game) {
                      first: game.runners_on_base.hasOwnProperty('runner_on_1b'),
                      second: game.runners_on_base.hasOwnProperty('runner_on_2b'),
                      third: game.runners_on_base.hasOwnProperty('runner_on_3b')
-         
+
                  },
         balls: parseInt(game.status.b),
         strikes: parseInt(game.status.s),
@@ -39,6 +53,15 @@ function checkGameState(game) {
                 }
             });
         }
+
+        if(diff.indexOf('outs') != -1 && newGameState.outs - gameState.outs == 2) {
+            _.filter(gameStateListeners, {'event': 'doubleplay'}).forEach(function(listener) {
+                if(!listener.condition || listener.condition(newGameState.outs, gameState.outs)) {
+                    listener.callback();
+                }
+            });
+        }
+
         console.log(diff);
     }
     gameState = newGameState;
@@ -47,6 +70,10 @@ function checkGameState(game) {
 function bindGameListener(eventName, call, condition) {
     gameStateListeners.push({'event': eventName, callback: call, condition: condition});
 }
+function removeGameListener(eventName) {
+    gameStateListeners = _.filter(gameStateListeners, function(val){ return val.event != eventName });
+}
+
 
 function triggerGameEvent(eventName, newGameEvent) {
     _.filter(gameStateListeners, {'event': eventName}).forEach(function(listener) {
@@ -55,10 +82,6 @@ function triggerGameEvent(eventName, newGameEvent) {
         }
     });
 }
-
-bindGameListener('strike', function(){console.log('STRIKKKEEE!');});
-bindGameListener('single', function(){console.log('SINGLE!SINGLE!');});
-bindGameListener('play', function(){console.log('There was a play!');});
 
 // Setting so that we have data during the demo even though no games are active :(
 var SIMULATE = true;
@@ -114,20 +137,42 @@ window.setInterval(function () {
 		}
 	}
     xhttp.send();
+    //sendNotification();
 
 }, timeout);
 
-/*
+var callbacks = {
+    strike: sendNotification,
+    doubleplay: sendNotification,
+    single: sendNotification,
+    play: sendNotification,
+    risp: sendNotification,
+    score: sendNotification,
+}
+
+var DEBUG_BIND_ALL_EVENTS = false;
+
+_.forEach(callbacks, function(callback, gameEvent) {
+    chrome.storage.local.get(gameEvent, function(val) {
+        if(val[gameEvent] || DEBUG_BIND_ALL_EVENTS) {
+            bindGameListener(gameEvent, callback);
+            console.log('on');
+        }
+    });
+});
+
 chrome.storage.onChanged.addListener(function(changes, namespace) {
     for (key in changes) {
         var storageChange = changes[key];
-        if(key == 'strike') {
+        var callback = callbacks[key];
+        if(callback) {
             if(storageChange.newValue) {
-                // add listener
+                bindGameListener(key, callback);
+                console.log('on');
             } else {
                 // remove listener
             }
         }
     }
 });
-*/
+

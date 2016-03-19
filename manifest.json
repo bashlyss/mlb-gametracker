@@ -12,7 +12,8 @@
     "background": {
         "scripts": [
             "lodash.core.min.js",
-            "background.js"
+            "background.js",
+            "jquery-2.2.2.min.js"
         ]
     },
     "content_scripts": [
