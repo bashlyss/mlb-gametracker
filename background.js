@@ -18,8 +18,10 @@ function getGameState(game) {
 
 function getGameStateDiff(a, b) {
     return _.reduce(a, function(result, value, key) {
-        return _.isEqual(value, b[key]) ?
-        result : result.concat(key);
+		if (key in ['balls', 'strikes', 'outs']) {
+			return value > b[key] ? result : result.concat(key);
+		}
+        return _.isEqual(value, b[key]) ? result : result.concat(key);
     }, []);
 }
 
@@ -76,9 +78,9 @@ window.setInterval(function () {
         if (xhttp.readyState == 4 && xhttp.status == 200) {
             var data = JSON.parse(xhttp.responseText).data.games.game;
             if (gameState) {
-                checkGameState(data[0]);
+                checkGameState(data[4]);
             } else {
-                gameState = getGameState(data[0]);
+                gameState = getGameState(data[4]);
             }
             var queryInfo = {
                 active: true,
