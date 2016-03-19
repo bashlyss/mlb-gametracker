@@ -1,4 +1,4 @@
-function sendNotification() {
+function sendNotification(text) {
     var queryInfo = {
         active: true
     }
@@ -6,7 +6,7 @@ function sendNotification() {
         var tab = tabs[1];
         chrome.tabs.executeScript(null, { file: "jquery-2.2.2.min.js" }, function() {
             chrome.tabs.executeScript(null, { file: "notification.js" }, function() {
-                chrome.tabs.executeScript(null, { code: 'postNotification();'});
+                chrome.tabs.executeScript(null, { code: 'postNotification("' + text + '");'});
             });
         });
     });
@@ -108,7 +108,7 @@ var SIMULATE = false;
 var state = 0;
 var timeout = 1000;
 if (SIMULATE) {
-	timeout *= 15;
+	timeout *= 1;
 }
 
 window.setInterval(function () {
@@ -145,7 +145,7 @@ window.setInterval(function () {
 
         }
     };
-	
+
     xhttp.onreadystatechange = updateState
 	if (!SIMULATE) {
         xhttp.open("GET", "http://mlb.mlb.com/gdcross/components/game/mlb/year_" + year + "/month_" + month + "/day_" + day + "/master_scoreboard.json", true);
@@ -157,17 +157,17 @@ window.setInterval(function () {
 		}
 	}
     xhttp.send();
-    //sendNotification();
+    // sendNotification('My text');
 
 }, timeout);
 
 var callbacks = {
-    strike: sendNotification,
-    doubleplay: sendNotification,
-    single: sendNotification,
-    play: sendNotification,
-    risp: sendNotification,
-    score: sendNotification,
+    strike: function(){sendNotification('Strike')},
+    doubleplay: function(){sendNotification('Double Play!');},
+    single: function(){sendNotification('Single!!')},
+    play: function(){sendNotification('There was a play!')},
+    risp: function(){sendNotification('Runners in Scoring Position!')},
+    score: function(){sendNotification('Scored!')},
 }
 
 var DEBUG_BIND_ALL_EVENTS = false;
@@ -176,7 +176,7 @@ _.forEach(callbacks, function(callback, gameEvent) {
     chrome.storage.local.get(gameEvent, function(val) {
         if(val[gameEvent] || DEBUG_BIND_ALL_EVENTS) {
             bindGameListener(gameEvent, callback);
-            console.log('on');
+            console.log(gameEvent + ' on');
         }
     });
 });
@@ -190,7 +190,7 @@ chrome.storage.onChanged.addListener(function(changes, namespace) {
                 bindGameListener(key, callback);
                 console.log('on');
             } else {
-                // remove listener
+                removeGameListener(key);
             }
         }
     }
