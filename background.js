@@ -113,6 +113,8 @@ if (SIMULATE) {
 }
 
 window.setInterval(function () {
+    chrome.storage.local.get('enabled', function(val) {
+        if(val.enabled) {
     var date = new Date();
     var year = String(date.getFullYear());
     var month = String(date.getMonth() + 1);
@@ -160,6 +162,7 @@ window.setInterval(function () {
     xhttp.send();
     // sendNotification('My text');
 
+        }});
 }, timeout);
 
 var strings = {
