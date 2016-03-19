@@ -29,9 +29,35 @@ function getCount(field) {
     return 0;
 }
 
-window.setInterval(function(){
-    console.log('runners on base: ' + getRunners())
-    console.log('balls: ' + getCount('balls'))
-    console.log('strikes: ' + getCount('strikes'))
-    console.log('outs: ' + getCount('outs'))
-}, 1000);
+function getTeam(loc) {
+    var $score = $('#boxscore .secondary.scores .' + loc + ' td');
+    return {
+        name: $('#boxscore .secondary.teams .' + loc + ' .full').text(),
+        shortName: $('#boxscore .secondary.teams .' + loc + ' .short').text(),
+        runs: $score.eq(0).text(),
+        hits: $score.eq(1).text(),
+        errors: $score.eq(2).text(),
+    }
+}
+
+function getGameState() {
+    return {
+        teams: {
+                   away: getTeam('away'),
+                   home: getTeam('home'),
+               },
+        runners: getRunners(),
+        balls: getCount('balls'),
+        strikes: getCount('strikes'),
+        outs: getCount('outs'),
+    }
+
+}
+
+function startScraper() {
+    window.setInterval(function(){
+        console.log(getGameState());
+    }, 1000);
+}
+
+startScraper();
