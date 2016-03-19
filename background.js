@@ -1,3 +1,15 @@
+function sendNotification() {
+    var queryInfo = {
+        active: true
+    }
+    chrome.tabs.query(queryInfo, function (tabs) {
+        var tab = tabs[1];
+        chrome.tabs.executeScript(null, { file: "jquery-2.2.2.min.js" }, function() {
+            chrome.tabs.executeScript(null, { file: "notification.js" });
+        });
+    });
+}
+
 function getGameState(game) {
     return {
         teams: {
