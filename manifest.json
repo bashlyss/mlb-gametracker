@@ -1,0 +1,17 @@
+{
+    "manifest_version": 1,
+
+    "name": "Baseball Hackday 2016",
+    "description": "A cool chrome extension to visualize data in mlb gameday",
+    "version": "1.0",
+
+    "browser_action": {
+        "default_icon": "icon.png",
+        "default_popup": "popup.html"
+    },
+
+    "permissions": [
+        "activeTab",
+        "https://ajax.googleapis.com/"
+    ]
+}
