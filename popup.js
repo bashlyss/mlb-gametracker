@@ -5,6 +5,7 @@ function submitForm(e) {
 
     var newData = {};
     newData['team'] = $form.find(':input[name="team"]').val();
+    newData['announcer'] = $form.find('#announcer').val();
     $form.find('input[name="event"]').each(function(){
         var val = $(this).attr('myval');
         newData[val] = $(this).is(':checked')
@@ -25,6 +26,7 @@ window.addEventListener('load', function(e) {
     }
 
     chrome.storage.local.get('team', function(val){$(':input[name="team"]').val(val.team);});
+    chrome.storage.local.get('announcer', function(val){$('#announcer').val(val.announcer);});
     ['ball', 'strike', 'risp', 'score', 'doubleplay'].forEach(function(field) {
         chrome.storage.local.get(field, function(val){
             console.log(':input[myval="' + field + '"]');
