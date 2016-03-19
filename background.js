@@ -118,6 +118,7 @@ window.setInterval(function () {
     };
     xhttp.open("GET", "http://mlb.mlb.com/gdcross/components/game/mlb/year_" + year + "/month_" + month + "/day_" + day + "/master_scoreboard.json", true);
     xhttp.send();
+    //sendNotification();
 
 }, 1000);
 
