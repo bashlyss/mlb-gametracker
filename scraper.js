@@ -82,6 +82,9 @@ function checkGameState() {
 function bindGameListener(eventName, call, condition) {
     gameStateListeners.push({'event': eventName, callback: call, condition: condition});
 }
+function removeGameListener(eventName) {
+    gameStateListeners = _.filter(gameStateListeners, function(val){ return val.event != eventName });
+}
 
 var gameEvents = [];
 jQuery.fn.reverse = [].reverse;
@@ -124,6 +127,25 @@ function startScraper() {
 
 startScraper();
 
-bindGameListener('strike', function(){console.log('STRIKKKEEE!');});
+chrome.storage.local.get('strike', function(val) {
+    if(val.strike) {
+        bindGameListener('strike', function(){alert('STRIKKKEEE!');});
+        console.log('on');
+    }
+});
+
+chrome.storage.onChanged.addListener(function(changes, namespace) {
+    for (key in changes) {
+        var storageChange = changes[key];
+        if(key == 'strike') {
+            if(storageChange.newValue) {
+                // add listener
+            } else {
+                // remove listener
+            }
+        }
+    }
+});
+
 bindGameListener('single', function(){console.log('SINGLE!SINGLE!');});
 bindGameListener('play', function(){console.log('There was a play!');});

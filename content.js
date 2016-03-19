@@ -1,4 +1,3 @@
 // content.js
-var firstHref = $("a[href^='http']").eq(0).attr("href");
 
-console.log(firstHref);
+console.log(chrome.storage.local.get('strike', function(val){console.log(val)}));

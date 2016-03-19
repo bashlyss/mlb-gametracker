@@ -97,3 +97,18 @@ window.setInterval(function () {
     xhttp.send();
 
 }, 1000);
+
+/*
+chrome.storage.onChanged.addListener(function(changes, namespace) {
+    for (key in changes) {
+        var storageChange = changes[key];
+        if(key == 'strike') {
+            if(storageChange.newValue) {
+                // add listener
+            } else {
+                // remove listener
+            }
+        }
+    }
+});
+*/
