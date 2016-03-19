@@ -1,0 +1,5 @@
+{
+    "doubleplay": "two for the price of one!",
+    "risp": "They have runners ready to score.",
+    "score": "Run scored! The score is now <%- home %>-<%- away -%>"
+}
