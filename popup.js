@@ -5,14 +5,12 @@ function submitForm(e) {
     var data = form.serializeArray();
     console.log(data);
 
-    data.forEach(function(elem){
-        if(elem.name == 'event') {
-            var key = elem.value;
-            chrome.storage.local.set({key: 'on'});
-            chrome.storage.local.get(key, function(val) {console.log(val)});
-        }
+    var newData = {}
+    $('form input[name="event"]').each(function(){
+        var val = $(this).attr('myval');
+        newData[val] = $(this).is(':checked')
     });
-
+    chrome.storage.local.set(newData);
 };
 
 // When the popup HTML has loaded
@@ -22,5 +20,3 @@ window.addEventListener('load', function(e) {
         $('form').on('submit', submitForm);
     }
 });
-
-
