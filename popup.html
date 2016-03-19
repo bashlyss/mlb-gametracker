@@ -7,6 +7,7 @@
 <html>
   <head>
     <title>Getting Started Extension's Popup</title>
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
     <style>
       body {
         min-width: 400px;
@@ -20,26 +21,46 @@
     <script src="popup.js"></script>
   </head>
   <body>
+    <div class="container" style="padding-bottom: 20px;">
     <form id="user-form" method="post">
-      <label>Enabled? <input id="enabled" type="checkbox" name="enabled" /></label>
-      <div>My Team</div>
-      <select name="team">
-        <option name="team" value="SFG">San Francisco Giants</option>
-        <option name="team" value="OAK">Oakland Athletics</option>
-      </select>
-      <div>Announcer</div>
-      <select id="announcer" name="announcer">
-        <option value="default">Default</option>
-        <option value="ernieharwell">Ernie Harwell</option>
-      </select>
-      <div>Alert me when there is a:</div>
-      <label><input type="checkbox" name="event" myval="ball">Ball</label><br>
-      <label><input type="checkbox" name="event" myval="strike">Strike</label><br>
-      <label><input type="checkbox" name="event" myval="risp">Runners In Scoring Position</label><br>
-      <label><input type="checkbox" name="event" myval="score">Scoring Change</label><br>
-      <label><input type="checkbox" name="event" myval="doubleplay">Double Play</label><br>
-      <input type="submit" value="Submit">
+      <div class="checkbox">
+        <label><input id="enabled" type="checkbox" name="enabled" /> Enabled?</label>
+      </div>
+      <div class="form-group">
+        <label for="team">My Team</label>
+        <select id="team" name="team" class="form-control">
+          <option name="team" value="SFG">San Francisco Giants</option>
+          <option name="team" value="OAK">Oakland Athletics</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="announcer">Announcer</label>
+        <select id="announcer" name="announcer" class="form-control">
+          <option value="default">Default</option>
+          <option value="ernieharwell">Ernie Harwell</option>
+        </select>
+      </div>
+      <h5>Alert me when there is a:</h5>
+      <!--
+      <div class="checkbox">
+        <label><input type="checkbox" name="event" myval="ball">Ball</label><br>
+      </div>
+      <div class="checkbox">
+        <label><input type="checkbox" name="event" myval="strike">Strike</label><br>
+      </div>
+      -->
+      <div class="checkbox">
+        <label><input type="checkbox" name="event" myval="risp">Runners In Scoring Position</label><br>
+      </div>
+      <div class="checkbox">
+        <label><input type="checkbox" name="event" myval="score">Scoring Change</label><br>
+      </div>
+      <div class="checkbox">
+        <label><input type="checkbox" name="event" myval="doubleplay">Double Play</label><br>
+      </div>
+      <button type="submit" class="btn btn-primary">Submit</button>
       <span id="message"></span>
     </form>
+  </div>
   </body>
 </html>
