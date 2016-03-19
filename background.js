@@ -14,6 +14,7 @@ function sendNotification(text) {
 
 function getGameState(game) {
     return {
+        id: game.gameday,
         teams: {
                    away: game.away_name_abbrev,
                    home: game.home_name_abbrev,
@@ -106,7 +107,7 @@ function triggerGameEvent(eventName, newGameEvent) {
 // Setting so that we have data during the demo even though no games are active :(
 var SIMULATE = true;
 var state = 0;
-var timeout = 1000;
+var timeout = 4000;
 if (SIMULATE) {
 	timeout *= 1;
 }
