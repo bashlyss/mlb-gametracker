@@ -60,7 +60,13 @@ bindGameListener('strike', function(){console.log('STRIKKKEEE!');});
 bindGameListener('single', function(){console.log('SINGLE!SINGLE!');});
 bindGameListener('play', function(){console.log('There was a play!');});
 
-
+// Setting so that we have data during the demo even though no games are active :(
+var SIMULATE = true;
+var state = 0;
+var timeout = 1000;
+if (SIMULATE) {
+	timeout *= 15;
+}
 
 window.setInterval(function () {
     var date = new Date();
@@ -74,14 +80,15 @@ window.setInterval(function () {
         day = '0' + day;
     }
     var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() {
+    function updateState() {
         if (xhttp.readyState == 4 && xhttp.status == 200) {
             var data = JSON.parse(xhttp.responseText).data.games.game;
             if (gameState) {
-                checkGameState(data[4]);
+                checkGameState(data[5]);
             } else {
-                gameState = getGameState(data[4]);
+                gameState = getGameState(data[5]);
             }
+			console.log(gameState);
             var queryInfo = {
                 active: true,
             }
@@ -95,10 +102,20 @@ window.setInterval(function () {
 
         }
     };
-    xhttp.open("GET", "http://mlb.mlb.com/gdcross/components/game/mlb/year_" + year + "/month_" + month + "/day_" + day + "/master_scoreboard.json", true);
+	
+    xhttp.onreadystatechange = updateState
+	if (!SIMULATE) {
+        xhttp.open("GET", "http://mlb.mlb.com/gdcross/components/game/mlb/year_" + year + "/month_" + month + "/day_" + day + "/master_scoreboard.json", true);
+	} else {
+		xhttp.open("GET", "state_" + String(state) + ".json");
+		state += 1;
+		if (state === 4) {
+			state = 0;
+		}
+	}
     xhttp.send();
 
-}, 1000);
+}, timeout);
 
 /*
 chrome.storage.onChanged.addListener(function(changes, namespace) {
