@@ -153,7 +153,7 @@ window.setInterval(function () {
 	} else {
 		xhttp.open("GET", "state_" + String(state) + ".json");
 		state += 1;
-		if (state === 4) {
+		if (state === 5) {
 			state = 0;
 		}
 	}
