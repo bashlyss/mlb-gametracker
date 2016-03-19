@@ -107,9 +107,9 @@ function triggerGameEvent(eventName, newGameEvent) {
 // Setting so that we have data during the demo even though no games are active :(
 var SIMULATE = true;
 var state = 0;
-var timeout = 4000;
+var timeout = 1000;
 if (SIMULATE) {
-	timeout *= 1;
+	timeout *= 15;
 }
 
 window.setInterval(function () {
