@@ -74,6 +74,14 @@ function checkGameState(game) {
             });
         }
 
+        if(diff.indexOf('runners') != -1 && (newState.runners.second || newState.runners.third)) {
+            _.filter(gameStateListeners, {'event': 'risp'}).forEach(function(listener) {
+                if(!listener.condition || listener.condition(newGameState.score, gameState.score)) {
+                    listener.callback();
+                }
+            });
+        }
+
         console.log(diff);
     }
     gameState = newGameState;
@@ -96,7 +104,7 @@ function triggerGameEvent(eventName, newGameEvent) {
 }
 
 // Setting so that we have data during the demo even though no games are active :(
-var SIMULATE = true;
+var SIMULATE = false;
 var state = 0;
 var timeout = 1000;
 if (SIMULATE) {
