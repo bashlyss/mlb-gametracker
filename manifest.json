@@ -27,7 +27,7 @@
     }
     ],
     "permissions": [
-        "storage"
+        "storage",
         "tabs",
         "notifications",
         "http://*/",

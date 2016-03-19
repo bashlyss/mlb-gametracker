@@ -8,8 +8,8 @@ function submitForm(e) {
     data.forEach(function(elem){
         if(elem.name == 'event') {
             var key = elem.value;
-            chrome.storage.local.set({key: true});
-            console.log(key);
+            chrome.storage.local.set({key: 'on'});
+            chrome.storage.local.get(key, function(val) {console.log(val)});
         }
     });
 
