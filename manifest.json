@@ -16,6 +16,7 @@
             ],
         "js": [
             "jquery-2.2.2.min.js",
+            "lodash.core.min.js",
             "content.js",
             "scraper.js"
             ]

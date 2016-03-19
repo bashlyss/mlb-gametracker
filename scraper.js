@@ -54,9 +54,24 @@ function getGameState() {
 
 }
 
+function getGameStateDiff(a, b) {
+    return _.reduce(a, function(result, value, key) {
+        return _.isEqual(value, b[key]) ?
+        result : result.concat(key);
+    }, []);
+}
+
+var gameState = null;
+
 function startScraper() {
+    gameState = getGameState();
     window.setInterval(function(){
-        console.log(getGameState());
+        var newGameState = getGameState();
+        var diff = getGameStateDiff(newGameState, gameState);
+        if(diff.length) {
+            console.log(diff);
+        }
+        gameState = newGameState;
     }, 1000);
 }
 
