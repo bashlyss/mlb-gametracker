@@ -1,12 +1,12 @@
-function sendNotification(text) {
+function sendNotification(url, text) {
     var queryInfo = {
         active: true
     }
     chrome.tabs.query(queryInfo, function (tabs) {
-        var tab = tabs[1];
         chrome.tabs.executeScript(null, { file: "jquery-2.2.2.min.js" }, function() {
             chrome.tabs.executeScript(null, { file: "notification.js" }, function() {
-                chrome.tabs.executeScript(null, { code: 'postNotification("' + text + '");'});
+                var runScript = 'postNotification("' + url + '", "' + text + '");'
+                chrome.tabs.executeScript(null, { code: runScript });
             });
         });
     });
@@ -49,12 +49,13 @@ var gameStateListeners = [];
 
 function checkGameState(game) {
     var newGameState = getGameState(game);
+    var url = 'mlb.mlb.com/mlb/gameday/index.jsp?gid=' + newGameState.id;
     var diff = getGameStateDiff(newGameState, gameState);
     if(diff.length) {
         if(diff.indexOf('strikes') != -1) {  // not sure why other lodash functions aren't working
             _.filter(gameStateListeners, {'event': 'strike'}).forEach(function(listener) {
                 if(!listener.condition || listener.condition(newGameState.strikes, gameState.strike)) {
-                    listener.callback();
+                    listener.callback(url);
                 }
             });
         }
@@ -62,7 +63,7 @@ function checkGameState(game) {
         if(diff.indexOf('outs') != -1 && newGameState.outs - gameState.outs == 2) {
             _.filter(gameStateListeners, {'event': 'doubleplay'}).forEach(function(listener) {
                 if(!listener.condition || listener.condition(newGameState.outs, gameState.outs)) {
-                    listener.callback();
+                    listener.callback(url);
                 }
             });
         }
@@ -70,7 +71,7 @@ function checkGameState(game) {
         if(diff.indexOf('score') != -1 && (newGameState.score.away > gameState.score.away || newGameState.score.home > gameState.score.home)) {
             _.filter(gameStateListeners, {'event': 'score'}).forEach(function(listener) {
                 if(!listener.condition || listener.condition(newGameState.score, gameState.score)) {
-                    listener.callback(newGameState.score);
+                    listener.callback(url, newGameState.score);
                 }
             });
         }
@@ -78,7 +79,7 @@ function checkGameState(game) {
         if(diff.indexOf('runners') != -1 && (newGameState.runners.second || newGameState.runners.third)) {
             _.filter(gameStateListeners, {'event': 'risp'}).forEach(function(listener) {
                 if(!listener.condition || listener.condition(newGameState.risp, gameState.risp)) {
-                    listener.callback();
+                    listener.callback(url);
                 }
             });
         }
@@ -175,12 +176,12 @@ var strings = {
 };
 
 var callbacks = {
-    strike: function(){sendNotification(strings.strike)},
-    doubleplay: function(){sendNotification(strings.doubleplay);},
-    single: function(){sendNotification(strings.single)},
-    play: function(){sendNotification(strings.play)},
-    risp: function(){sendNotification(strings.risp)},
-    score: function(data){sendNotification(strings.score.replace('away', data.away).replace('home', data.home));},
+    strike: function(url){sendNotification(url, strings.strike)},
+    doubleplay: function(url){sendNotification(url, strings.doubleplay);},
+    single: function(url){sendNotification(url, strings.single)},
+    play: function(url){sendNotification(url, strings.play)},
+    risp: function(url){sendNotification(url, strings.risp)},
+    score: function(url, data){sendNotification(url, strings.score.replace('away', data.away).replace('home', data.home));},
 }
 
 var DEBUG_BIND_ALL_EVENTS = false;
