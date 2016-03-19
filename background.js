@@ -8,7 +8,7 @@ function getGameState(game) {
                      first: game.runners_on_base.hasOwnProperty('runner_on_1b'),
                      second: game.runners_on_base.hasOwnProperty('runner_on_2b'),
                      third: game.runners_on_base.hasOwnProperty('runner_on_3b')
-         
+
                  },
         balls: parseInt(game.status.b),
         strikes: parseInt(game.status.s),
@@ -47,6 +47,10 @@ function checkGameState(game) {
 function bindGameListener(eventName, call, condition) {
     gameStateListeners.push({'event': eventName, callback: call, condition: condition});
 }
+function removeGameListener(eventName) {
+    gameStateListeners = _.filter(gameStateListeners, function(val){ return val.event != eventName });
+}
+
 
 function triggerGameEvent(eventName, newGameEvent) {
     _.filter(gameStateListeners, {'event': eventName}).forEach(function(listener) {
@@ -100,7 +104,13 @@ window.setInterval(function () {
 
 }, 1000);
 
-/*
+chrome.storage.local.get('strike', function(val) {
+    if(val.strike) {
+        bindGameListener('strike', function(){alert('STRIKKKEEE!');});
+        console.log('on');
+    }
+});
+
 chrome.storage.onChanged.addListener(function(changes, namespace) {
     for (key in changes) {
         var storageChange = changes[key];
@@ -113,4 +123,4 @@ chrome.storage.onChanged.addListener(function(changes, namespace) {
         }
     }
 });
-*/
+
