@@ -27,6 +27,10 @@ function getGameState(game) {
         balls: parseInt(game.status.b),
         strikes: parseInt(game.status.s),
         outs: parseInt(game.status.o),
+        score: {
+                    away: game.linescore.r.away,
+                    home: game.linescore.r.home,
+               }
     }
 }
 
@@ -57,6 +61,14 @@ function checkGameState(game) {
         if(diff.indexOf('outs') != -1 && newGameState.outs - gameState.outs == 2) {
             _.filter(gameStateListeners, {'event': 'doubleplay'}).forEach(function(listener) {
                 if(!listener.condition || listener.condition(newGameState.outs, gameState.outs)) {
+                    listener.callback();
+                }
+            });
+        }
+
+        if(diff.indexOf('score') != -1) {
+            _.filter(gameStateListeners, {'event': 'score'}).forEach(function(listener) {
+                if(!listener.condition || listener.condition(newGameState.score, gameState.score)) {
                     listener.callback();
                 }
             });
