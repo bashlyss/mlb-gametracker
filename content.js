@@ -15,6 +15,6 @@ window.setInterval(function () {
         day = '0' + day;
     }
     $.get("http://mlb.mlb.com/gdcross/components/game/mlb/year_" + year + "/month_" + month + "/day_" + day + "/master_scoreboard.json", function (response) {
-        console.log(response);
+        //console.log(response);
     });
 }, 1000);

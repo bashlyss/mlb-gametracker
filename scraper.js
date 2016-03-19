@@ -67,9 +67,13 @@ function checkGameState() {
     var newGameState = getGameState();
     var diff = getGameStateDiff(newGameState, gameState);
     if(diff.length) {
-        if(_.find(diff, 'strikes')) {
+        console.log(diff);
+        if(diff.indexOf('strikes') != -1) {  // not sure why other lodash functions aren't working
+            console.log('strikes diff');
             _.filter(gameStateListeners, {'event': 'strike'}).forEach(function(listener) {
-                if(listener.condition && listener.condition(newGameState.strikes, gameState.strike)) {
+                console.log(listener);
+                if(!listener.condition || listener.condition(newGameState.strikes, gameState.strike)) {
+                    console.log(listener);
                     listener.callback();
                 }
             });
@@ -83,11 +87,36 @@ function bindGameListener(eventName, call, condition) {
     gameStateListeners.push({'event': eventName, callback: call, condition: condition});
 }
 
-var events = [];
+var gameEvents = [];
 jQuery.fn.reverse = [].reverse;
-function checkEvents() {
-    $('#events > *').reverse().each(function(){
 
+function triggerGameEvent(eventName, newGameEvent) {
+    _.filter(gameStateListeners, {'event': eventName}).forEach(function(listener) {
+        console.log(listener);
+        if(!listener.condition || listener.condition(newGameEvent.description)) {
+            console.log(listener);
+            listener.callback();
+        }
+    });
+}
+function checkGameEvents() {
+    $('#events > *').reverse().each(function(){
+        var $gameEvent = $(this);
+        if($gameEvent.hasClass('play')) {
+            var abNum = $gameEvent.find(' > .detail').data('ab-num');
+            if(! _.find(gameEvents, {'ab-num': abNum})) {
+                var newGameEvent = {
+                    'ab-num': abNum,
+                    'description': $gameEvent.find('.description').text()
+                }
+                console.log(newGameEvent);
+                gameEvents.push(newGameEvent);
+
+                if(newGameEvent.description.indexOf('singles')) {
+                    triggerGameEvent('single', newGameEvent);
+                }
+            }
+        }
     });
 }
 
@@ -95,10 +124,12 @@ function startScraper() {
     gameState = getGameState();
     window.setInterval(function(){
         checkGameState();
-        checkEvents();
+        checkGameEvents();
     }, 1000);
 }
 
 startScraper();
 
-bindGameListener('strike', function(){console.log('STRIKKKEEE!')});
+bindGameListener('strike', function(){console.log('STRIKKKEEE!');});
+bindGameListener('single', function(){console.log('SINGLE!SINGLE!');});
+bindGameListener('play', function(){console.log('There was a play!');});
