@@ -10,7 +10,10 @@
         "default_popup": "popup.html"
     },
     "background": {
-        "scripts": ["background.js"]
+        "scripts": [
+            "lodash.core.min.js",
+            "background.js"
+        ]
     },
 
     "content_scripts": [
