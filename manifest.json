@@ -12,7 +12,6 @@
     "background": {
         "scripts": ["background.js"]
     },
-
     "content_scripts": [
     {
         "matches":[
@@ -28,6 +27,7 @@
     }
     ],
     "permissions": [
+        "storage"
         "tabs",
         "notifications",
         "http://*/",
