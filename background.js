@@ -110,7 +110,7 @@ var SIMULATE = true;
 var state = 0;
 var timeout = 1000;
 if (SIMULATE) {
-	timeout *= 15;
+	timeout *= 8;
 }
 
 window.setInterval(function () {
@@ -148,7 +148,7 @@ window.setInterval(function () {
 	} else {
 		xhttp.open("GET", "state_" + String(state) + ".json");
 		state += 1;
-		if (state === 5) {
+		if (state === 4) {
 			state = 0;
 		}
 	}
