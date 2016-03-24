@@ -1,11 +1,22 @@
-function sendNotification(url, text) {
+// Testing config information
+var SIMULATE = false; // Set to false for live data
+var SIMULATION_STATE = 0;
+var TIMEOUT = 1000;
+var UPDATE_TIMEOUT = 30000;
+if (SIMULATE) {
+    TIMEOUT *= 4;
+}
+
+var team = '';
+
+function sendNotification(url, text, home, away) {
     var queryInfo = {
         active: true
     }
     chrome.tabs.query(queryInfo, function (tabs) {
         chrome.tabs.executeScript(null, { file: "jquery-2.2.2.min.js" }, function() {
             chrome.tabs.executeScript(null, { file: "notification.js" }, function() {
-                var runScript = 'postNotification("' + url + '", "' + text + '");'
+                var runScript = 'postNotification("' + url + '", "' + text + '", "' + gameState.teams.home +'", "' + gameState.teams.away + '");'
                 chrome.tabs.executeScript(null, { code: runScript });
             });
         });
@@ -54,7 +65,15 @@ function checkGameState(game) {
     if(diff.length) {
         if(diff.indexOf('strikes') != -1) {  // not sure why other lodash functions aren't working
             _.filter(gameStateListeners, {'event': 'strike'}).forEach(function(listener) {
-                if(!listener.condition || listener.condition(newGameState.strikes, gameState.strike)) {
+                if(!listener.condition || listener.condition(newGameState.strikes, gameState.strikes)) {
+                    listener.callback(url);
+                }
+            });
+        }
+
+        if(diff.indexOf('balls') != -1) {  // not sure why other lodash functions aren't working
+            _.filter(gameStateListeners, {'event': 'ball'}).forEach(function(listener) {
+                if(!listener.condition || listener.condition(newGameState.balls, gameState.balls)) {
                     listener.callback(url);
                 }
             });
@@ -84,7 +103,6 @@ function checkGameState(game) {
             });
         }
 
-        console.log(diff);
     }
     gameState = newGameState;
 }
@@ -105,61 +123,65 @@ function triggerGameEvent(eventName, newGameEvent) {
     });
 }
 
-// Setting so that we have data during the demo even though no games are active :(
-var SIMULATE = true;
-var state = 0;
-var timeout = 1000;
-if (SIMULATE) {
-	timeout *= 8;
-}
-
 window.setInterval(function () {
     chrome.storage.local.get('enabled', function(val) {
         if(val.enabled) {
-    var date = new Date();
-    var year = String(date.getFullYear());
-    var month = String(date.getMonth() + 1);
-    if (date.getMonth() < 9) {
-        month = '0' + month;
-    }
-    var day = String(date.getDate());
-    if (date.getDate() < 10) {
-        day = '0' + day;
-    }
-    var xhttp = new XMLHttpRequest();
-    function updateState() {
-        if (xhttp.readyState == 4 && xhttp.status == 200) {
-            var data = JSON.parse(xhttp.responseText).data.games.game;
-            if (gameState) {
-                checkGameState(data[5]);
+            var date = new Date();
+            var year = String(date.getFullYear());
+            var month = String(date.getMonth() + 1);
+            if (date.getMonth() < 9) {
+                month = '0' + month;
+            }
+            var day = String(date.getDate());
+            if (date.getDate() < 10) {
+                day = '0' + day;
+            }
+            var xhttp = new XMLHttpRequest();
+            function updateState() {
+                if (xhttp.readyState == 4 && xhttp.status == 200) {
+                    var data = JSON.parse(xhttp.responseText).data.games.game;
+                    // TODO Get game state for a specific game based on team/timeslot
+                    _.forEach(data, function (game) {
+                        if (team === game.away_name_abbrev || team === game.home_name_abbrev) {
+                            if (gameState) {
+                                checkGameState(game);
+                            } else {
+                                gameState = getGameState(game);
+                            }
+                        }
+                    });;
+                    var queryInfo = {
+                        active: true,
+                    };
+                }
+            }
+
+            xhttp.onreadystatechange = updateState
+            if (!SIMULATE) {
+                xhttp.open("GET", "http://mlb.mlb.com/gdcross/components/game/mlb/year_" + year + "/month_" + month + "/day_" + day + "/master_scoreboard.json", true);
             } else {
-                gameState = getGameState(data[5]);
+                xhttp.open("GET", "state_" + String(SIMULATION_STATE) + ".json");
+                SIMULATION_STATE += 1;
+                if (SIMULATION_STATE === 4) {
+                    SIMULATION_STATE = 0;
+                }
             }
-			console.log(gameState);
-            var queryInfo = {
-                active: true,
-            }
-        }
-    };
+            xhttp.send();
+            // sendNotification('My text');
+        };
+    });
+}, TIMEOUT);
 
-    xhttp.onreadystatechange = updateState
-	if (!SIMULATE) {
-        xhttp.open("GET", "http://mlb.mlb.com/gdcross/components/game/mlb/year_" + year + "/month_" + month + "/day_" + day + "/master_scoreboard.json", true);
-	} else {
-		xhttp.open("GET", "state_" + String(state) + ".json");
-		state += 1;
-		if (state === 4) {
-			state = 0;
-		}
-	}
-    xhttp.send();
-    // sendNotification('My text');
 
-        }});
-}, timeout);
+window.setInterval(function () {
+    chrome.storage.local.get('team', function(val) {
+        team = val.team;
+    });
+}, UPDATE_TIMEOUT);
 
 var strings = {
     strike: 'strike',
+    ball: 'ball',
     doubleplay: 'double play',
     single: 'single',
     play: 'play',
@@ -169,6 +191,7 @@ var strings = {
 
 var callbacks = {
     strike: function(url){sendNotification(url, strings.strike)},
+    ball: function(url){sendNotification(url, strings.ball)},
     doubleplay: function(url){sendNotification(url, strings.doubleplay);},
     single: function(url){sendNotification(url, strings.single)},
     play: function(url){sendNotification(url, strings.play)},
@@ -182,7 +205,6 @@ _.forEach(callbacks, function(callback, gameEvent) {
     chrome.storage.local.get(gameEvent, function(val) {
         if(val[gameEvent] || DEBUG_BIND_ALL_EVENTS) {
             bindGameListener(gameEvent, callback);
-            console.log(gameEvent + ' on');
         }
     });
 });
@@ -192,7 +214,6 @@ function updateAnnouncer() {
         var announcer = val.announcer || 'default';
         $.get('https://raw.githubusercontent.com/loewen-uwaterloo/baseball-hackday/master/announcers/' + announcer + '.json', {}, function(data) {
             $.extend(strings, data);
-            console.log(strings);
             }, 'json');
     });
 }
@@ -205,7 +226,6 @@ chrome.storage.onChanged.addListener(function(changes, namespace) {
         if(callback) {
             if(storageChange.newValue) {
                 bindGameListener(key, callback);
-                console.log('on');
             } else {
                 removeGameListener(key);
             }

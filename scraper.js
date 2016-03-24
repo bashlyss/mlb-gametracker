@@ -139,8 +139,8 @@ startScraper();
 
 
 var callbacks = {
-    strike: function(){alert('STRIKKKEEE!');},
-    doubleplay: function(){alert('DOUBLE PLAY');},
+    strike: function(){},
+    doubleplay: function(){},
     single: function(){console.log('SINGLE!SINGLE!');},
     play: function(){console.log('There was a play!');}
 }
