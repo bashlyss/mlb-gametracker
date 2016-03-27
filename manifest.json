@@ -1,9 +1,9 @@
 {
     "manifest_version": 2,
 
-    "name": "Third Base Coach",
-    "description": "A chrome extension to stay up to date with your favorite MLB team",
-    "version": "1.0",
+    "name": "MLB Gametracker",
+    "description": "Stay up to date with your favorite MLB team and receive notifications during the game as it happens",
+    "version": "0.0.1",
 
     "browser_action": {
         "default_icon": "baseball.svg.png",

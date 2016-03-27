@@ -3,6 +3,6 @@
     "risp": "runners in scoring position!",
     "score": "The score is now home-away",
     "out": "That's an out!",
-    "ball": "Ball",
-    "strike": "Strike!",
+    "ball": "Ball. Count is balls-strikes",
+    "strike": "Strike! Count is balls-strikes",
 }

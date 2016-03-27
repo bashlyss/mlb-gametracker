@@ -4,7 +4,7 @@ var SIMULATION_STATE = 0;
 var TIMEOUT = 1000;
 var UPDATE_TIMEOUT = 30000;
 if (SIMULATE) {
-    TIMEOUT *= 4;
+    TIMEOUT *= 8;
 }
 
 var team = '';
@@ -66,7 +66,7 @@ function checkGameState(game) {
         if(diff.indexOf('strikes') != -1) {  // not sure why other lodash functions aren't working
             _.filter(gameStateListeners, {'event': 'strike'}).forEach(function(listener) {
                 if(!listener.condition || listener.condition(newGameState.strikes, gameState.strikes)) {
-                    listener.callback(url);
+                    listener.callback(url, newGameState);
                 }
             });
         }
@@ -74,7 +74,7 @@ function checkGameState(game) {
         if(diff.indexOf('balls') != -1) {  // not sure why other lodash functions aren't working
             _.filter(gameStateListeners, {'event': 'ball'}).forEach(function(listener) {
                 if(!listener.condition || listener.condition(newGameState.balls, gameState.balls)) {
-                    listener.callback(url);
+                    listener.callback(url, newGameState);
                 }
             });
         }
@@ -180,18 +180,18 @@ window.setInterval(function () {
 }, UPDATE_TIMEOUT);
 
 var strings = {
-    strike: 'strike',
-    ball: 'ball',
+    strike: 'strike balls-strikes',
+    ball: 'ball balls-strikes',
     doubleplay: 'double play',
     single: 'single',
     play: 'play',
     risp: 'risp',
-    score: 'score',
+    score: 'score home-away',
 };
 
 var callbacks = {
-    strike: function(url){sendNotification(url, strings.strike)},
-    ball: function(url){sendNotification(url, strings.ball)},
+    strike: function(url, data){sendNotification(url, strings.strike.replace('balls', data.balls).replace('strikes', data.strikes))},
+    ball: function(url, data){sendNotification(url, strings.ball.replace('balls', data.balls).replace('strikes', data.strikes))},
     doubleplay: function(url){sendNotification(url, strings.doubleplay);},
     single: function(url){sendNotification(url, strings.single)},
     play: function(url){sendNotification(url, strings.play)},
